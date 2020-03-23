@@ -3,6 +3,16 @@ const User = require('../models/User');
 
 
 module.exports = {
+
+    async show(req, res) {
+        const { author_id } = req.params;
+    
+        const posts = await Post.find({ author: author_id }).sort('-createdAt')
+        .populate('author', ['name', 'username', 'avatar']).execPopulate();
+    
+        return res.json(posts);
+      },
+
     async index(req, res) {
         const posts = await Post.find().sort('-createdAt')
         .populate('author', ['username', 'avatar']);
@@ -28,6 +38,13 @@ module.exports = {
         await post.
         populate('author', ['username', 'avatar'])
         .execPopulate();
+
+        
+       
+        author.posts.push(post);
+
+        await author.save();
+
        
 
 

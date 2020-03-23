@@ -2,16 +2,31 @@ const User = require('../models/User');
 
 module.exports = {
     async index(req, res) {
-        const users = await User.find().sort('-createdAt');
+        const users = await User.find().sort('-createdAt').populate('posts');
       
         res.json(users);
     },
 
     async show(req, res) {
-        const profile = await User.findById(req.params.id);
+        try {
+        const profile = await User.findById(req.params.id).populate({
+          path: 'posts',
+          options: { sort: { createdAt: -1 } }
+          
+        });
+    
+        return res.json(profile);
+
+    } catch(err){
+        res.status(400).send(err)
+    }
+      },
+
+   // async show(req, res) {
+    //    const profile = await User.findById(req.params.id);
       
-        res.json(profile);
-    },
+    //    res.json(profile);
+   // },
 
     async store(req, res) {
             const { name, username, email, password } = req.body;
